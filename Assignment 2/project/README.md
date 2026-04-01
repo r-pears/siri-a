@@ -17,6 +17,7 @@ Dependencies:
 3. Make sure MongoDB is running locally
 
 **if using Brew, otherwise start it manually**
+
 brew services start mongodb-community  
 
 4. Start the API
