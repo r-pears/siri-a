@@ -1,14 +1,20 @@
 const express = require("express");
 const cors = require("cors");
 const { MongoClient, ObjectId } = require("mongodb");
+require("dotenv").config();
 
 const app = express();
-app.use(cors());
+app.use(
+  cors({
+    origin: ["http://localhost:3000"],
+  }),
+);
 app.use(express.json());
 
-const PORT = 3003;
+const PORT = process.env.PORT || 3003;
 
-const client = new MongoClient("mongodb://localhost:27017");
+const client = new MongoClient(process.env.MONGO_URI);
+
 let reviewsCollection;
 
 async function startServer() {
@@ -38,22 +44,22 @@ app.get("/seed", async (req, res) => {
       address: "Upplandsgatan 7",
       image: "Miyakodori.jpg",
       text: "Miyakodori is a vibrant yet relaxed Japanese izakaya...",
-      standouts: ["pork belly skewers", "chicken liver mousse with milk bread"]
+      standouts: ["pork belly skewers", "chicken liver mousse with milk bread"],
     },
     {
       name: "Lu",
       address: "Skånegatan 88",
       image: "Lu.jpg",
       text: "Lu serves Cantonese street style food from Hong Kong...",
-      standouts: ["pork dumplings", "beef noodles"]
-    }
+      standouts: ["pork dumplings", "beef noodles"],
+    },
   ]);
 
   res.send("Seeded!");
 });
 
 app.get("/reviews", async (req, res) => {
-	try {
+  try {
     const reviews = await reviewsCollection.find({}).toArray();
     res.status(200).json(reviews);
   } catch (err) {
@@ -62,11 +68,11 @@ app.get("/reviews", async (req, res) => {
 });
 
 app.get("/reviews/:id", async (req, res) => {
-    const id = req.params.id;
-    if (!ObjectId.isValid(id)) return res.sendStatus(400);
+  const id = req.params.id;
+  if (!ObjectId.isValid(id)) return res.sendStatus(400);
 
-    const review = await reviewsCollection.findOne({ _id: new ObjectId(id) });
-    if (!review) return res.sendStatus(404);
+  const review = await reviewsCollection.findOne({ _id: new ObjectId(id) });
+  if (!review) return res.sendStatus(404);
 
-    res.status(200).json(review);
+  res.status(200).json(review);
 });
